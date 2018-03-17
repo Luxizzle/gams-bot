@@ -12,11 +12,30 @@ let int = (integer) => /^-?\d+$/.test(integer) ? parseInt(integer, 10) : undefin
  * }
  */
 
-function findRole(roles, arg) {
+function findRole(roles, guild, arg) {
   let role = roles.find((r, index) => {
+    let guildRole = getRole(guild, r.id)
+
+    let name = guildRole ? guildRole.name : r.name
+
     if (int(arg) === (index+1)) return true
     if (r.id === arg) return true
-    if (r.name === arg) return true
+    if (r.name === name) return true
+    return false
+  })
+
+  return role
+}
+
+function findRoleIndex(roles, guild, arg) {
+  let role = roles.findIndex((r, index) => {
+    let guildRole = getRole(guild, r.id)
+
+    let name = guildRole ? guildRole.name : r.name
+
+    if (int(arg) === (index+1)) return true
+    if (r.id === arg) return true
+    if (r.name === name) return true
     if (r.aliases.indexOf(arg) > -1) return true
     return false
   })
@@ -24,16 +43,8 @@ function findRole(roles, arg) {
   return role
 }
 
-function findRoleIndex(roles, arg) {
-  let role = roles.findIndex((r, index) => {
-    if (int(arg) === index) return true
-    if (r.id === arg) return true
-    if (r.name === arg) return true
-    if (r.aliases.indexOf(arg) > -1) return true
-    return false
-  })
-
-  return role
+function getRole(guild, id) {
+  return guild.roles.find((r) => r.id === id)
 }
 
 // ROLE GIVING
@@ -58,14 +69,15 @@ let cmd = bot.registerCommand("role", async (msg, args) => {
     return
   }
 
-  if (!findRole(roles, arg)) {
+  let role = findrole(roles, msg.channel.guild, arg)
+
+  if (!role) {
     msg.channel.createMessage('No role found with that name')
     return
   }
 
   // EXECUTION
 
-  let role = findRole(roles, arg)
   let member = msg.member
 
   if (member.roles.indexOf(role.id) > -1) { // remove role
@@ -101,3 +113,4 @@ module.exports = cmd
 
 module.exports.findRole = findRole
 module.exports.findRoleIndex = findRoleIndex
+module.exports.getRole = getRole

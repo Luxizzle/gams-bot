@@ -25,7 +25,7 @@ cmd.registerSubcommand('add', async (msg, args) => {
     return
   }
 
-  if (findRole(roles, arg)) { 
+  if (findRole(roles, msg.channel.guild, arg)) { 
     msg.channel.createMessage('There is already a role with that name (alias included)')
     return
   }
