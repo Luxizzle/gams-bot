@@ -25,6 +25,10 @@ function connect(text, voice) {
     text.createMessage(`Added **${item.title}** to playlist`)
   })
 
+  client.on('playlist-remove', (item) => {
+    text.createMessage(`Removed **${item.title}** from playlist`)
+  })
+
   client.on('download-error', (item) => {
     text.createMessage(`Failed to download **${item.title}**`)
   })
@@ -40,7 +44,7 @@ function connect(text, voice) {
   return client
 }
 
-bot.registerCommand('play', async function(msg, args) {
+bot.registerCommand('music', async function(msg, args) {
   let url = args[0]
 
   let client = clients.find((c) => c.guildID === msg.channel.guild.id)
@@ -70,5 +74,6 @@ bot.registerCommand('play', async function(msg, args) {
   requirements: {
     userIDs: [ process.env.OWNER_ID ]
   },
-  guildOnly: true
+  guildOnly: true,
+  aliases: [ 'play' ]
 })
