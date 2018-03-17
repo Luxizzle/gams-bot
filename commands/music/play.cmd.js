@@ -15,30 +15,56 @@ function connect(text, voice) {
 
   client.on('playing', (item) => {
     text.createMessage(`Now playing **${item.title}**`)
+      .then((msg) => setTimeout(() => msg.delete(), 20 * 1000))
+      .catch(err => {})
   })
 
   client.on('finished', (item) => {
     text.createMessage(`Finished playing **${item.title}**`)
+      .then((msg) => setTimeout(() => msg.delete(), 30 * 1000))
+      .catch(err => {})
   })
 
   client.on('playlist-add', (item) => {
     text.createMessage(`Added **${item.title}** to playlist`)
+      .then((msg) => setTimeout(() => msg.delete(), 30 * 1000))
+      .catch(err => {})
   })
 
   client.on('playlist-remove', (item) => {
     text.createMessage(`Removed **${item.title}** from playlist`)
+      .then((msg) => setTimeout(() => msg.delete(), 30 * 1000))
+      .catch(err => {})
   })
 
   client.on('download-error', (item) => {
     text.createMessage(`Failed to download **${item.title}**`)
+      .then((msg) => setTimeout(() => msg.delete(), 30 * 1000))
+      .catch(err => {})
   })
 
   client.on('download-start', (item) => {
     text.createMessage(`Started downloading **${item.title}**`)
+      .then((msg) => setTimeout(() => msg.delete(), 30 * 1000))
+      .catch(err => {})
   })
 
   client.on('download-finished', (item) => {
     text.createMessage(`Finished downloading **${item.title}**`)
+      .then((msg) => setTimeout(() => msg.delete(), 30 * 1000))
+      .catch(err => {})
+  })
+
+  client.on('idle', () => {
+    text.createMessage('Idled too long, leaving channel.')
+      .then((msg) => setTimeout(() => msg.delete(), 30 * 1000))
+      .catch(err => {})
+  })
+
+  client.on('idle', () => {
+    text.createMessage('Everybody left, leaving channel.')
+      .then((msg) => setTimeout(() => msg.delete(), 30 * 1000))
+      .catch(err => {})
   })
 
   return client

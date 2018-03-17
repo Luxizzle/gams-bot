@@ -21,10 +21,37 @@ class MusicClient extends EventEmitter {
 
     this.maxDuration = 60 * 5 // 5 minutes
 
+    this.maxIdle = 1000 * 60 * 2 // 2 minutes idle time
+    this.timeout = null
+
     this.list = []
     this.current = null
 
     this.emit('ready')
+
+    this.onLeave = (member, channel, channel2) => {
+      if (channel2) channel = channel2
+      if (channel.id !== this.channel.id) return
+
+      this.emit('empty-channel')
+  
+      if (this.channel.voiceMembers.size === 1) this.disconnect()
+    }
+    bot.on('voiceChannelLeave', this.onLeave)
+    bot.on('voiceChannelSwitch', this.onLeave)
+  }
+
+  
+
+  idle() {
+    if (this.timeout) clearTimeout(this.timeout)
+    this.timeout = setTimeout(() => {
+      if (this.playing ||this.downloading > 0) return
+
+      this.emit('idle')
+
+      this.disconnect()
+    }, this.maxIdle)
   }
 
   get playing() { return this.connection ? this.connection.playing : false }
@@ -40,8 +67,6 @@ class MusicClient extends EventEmitter {
     this.current = item
 
     this.emit('playing', item)
-
-    console.log(item.filePath)
 
     this.connection.play(item.filePath)
   }
@@ -117,13 +142,31 @@ class MusicClient extends EventEmitter {
 
     this.emit('playlist-add', this.list[this.list.length-1])
 
-    this.download()
+    if (this.ready) this.download()
 
     return this.list[this.list.length-1]
   }
 
   remove(i) {
 
+  }
+
+  onReady() {
+    this.ready = true
+
+    this.connection.on('end', () => {
+      if (this.current) this.emit('finished', this.current)
+      this.current = null
+      this.play()
+      this.idle()
+    })
+
+    this.idle()
+
+    if (this.list.length > 0) {
+      this.download()
+      this.play()
+    }
   }
 
   async connect(channel) {
@@ -133,21 +176,21 @@ class MusicClient extends EventEmitter {
     this.connection = connection
     
     if (this.connection.ready) {
-      this.ready = true
+      this.onReady()
     } else {
-      this.connection.once('ready', () => this.ready = true)
+      this.connection.once('ready', () => this.onReady())
     }
-
-    this.connection.on('end', () => {
-      this.emit('finished', this.current)
-      this.current = null
-      this.play()
-    })
   }
 
   disconnect() {
+    if (this.timeout) clearTimeout(this.timeout)
+    this.timeout = null
+
     if (this.playing) this.connection.stopPlaying()
-    this.channel.leave()
+    if (this.channel) this.channel.leave()
+
+    bot.removeListener('voiceChannelLeave', this.onLeave)
+    bot.removeListener('voiceChannelSwitch', this.onLeave)
 
     this.connection = null
     this.channel = null
