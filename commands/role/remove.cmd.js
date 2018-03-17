@@ -54,5 +54,6 @@ cmd.registerSubcommand('remove', async (msg, args) => {
     permissions: {
       administrator: true,
     }
-  }
+  },
+  guildOnly: true
 })

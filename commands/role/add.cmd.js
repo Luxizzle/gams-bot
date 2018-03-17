@@ -66,5 +66,6 @@ cmd.registerSubcommand('add', async (msg, args) => {
     permissions: {
       administrator: true,
     }
-  }
+  },
+  guildOnly: true
 })

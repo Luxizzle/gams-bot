@@ -57,5 +57,6 @@ cmd.registerSubcommand('update', async (msg, args) => {
     permissions: {
       administrator: true,
     }
-  }
+  },
+  guildOnly: true
 })

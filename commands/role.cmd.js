@@ -106,7 +106,8 @@ let cmd = bot.registerCommand("role", async (msg, args) => {
     For roles use \`role list\'.
   `),
   aliases: [ 'role', 'iam' ],
-  argsRequired: true
+  argsRequired: true,
+  guildOnly: true
 })
 
 module.exports = cmd

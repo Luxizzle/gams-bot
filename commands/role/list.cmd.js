@@ -33,5 +33,6 @@ cmd.registerSubcommand('list', async (msg, args) => {
 }, {
   description: 'Give a list of available roles',
   aliases: [  ],
-  argsRequired: false
+  argsRequired: false,
+  guildOnly: true
 })

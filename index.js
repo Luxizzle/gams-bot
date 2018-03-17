@@ -34,6 +34,11 @@ glob('./commands/**/*.cmd.js')
 process.stdin.resume()
 function exitHandler(code) {
   // clean up voice connections
+  let clients = require('./commands/music/play.cmd')
+  for (let client of clients) {
+    client.disconnect()
+  }
+
   del.sync('tmp')
 
   // disconnect ws
