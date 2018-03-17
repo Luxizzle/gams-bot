@@ -59,6 +59,17 @@ class MusicClient extends EventEmitter {
 
     this.emit('download-start', item)
 
+    if (fs.existsSync(item.filePath)) {
+      item.done = true
+      item.downloading = false
+      this.downloading -= 1
+
+      this.emit('download-finished', item)
+      if (!this.playing) this.play()
+
+      return this.download()
+    }
+    
     ytdl.file(item.filePath, item.url, { format: 'bestaudio' })
       .then(() => {
         item.done = true
