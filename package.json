@@ -1,6 +1,6 @@
 {
   "name": "strelizia",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Simple discord bot",
   "main": "index.js",
   "scripts": {
@@ -18,16 +18,6 @@
   "homepage": "https://github.com/Luxizzle/strelizia#readme",
   "dependencies": {
     "debug": "^3.1.0",
-    "del": "^3.0.0",
-    "detect-indent": "^5.0.0",
-    "dotenv": "^5.0.1",
-    "eris": "^0.8.5",
-    "fast-glob": "^2.1.0",
-    "fs-extra": "^5.0.0",
-    "image-to-uri": "^1.0.0",
-    "js-yaml": "^3.11.0",
-    "level": "^3.0.0",
-    "p-timeout": "^2.0.1",
-    "youtube-dl2": "^1.0.0"
+    "eris": "^0.8.5"
   }
 }
