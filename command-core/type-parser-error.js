@@ -1,24 +1,23 @@
-class ParseTypeError {
-  format() {
-    const { type, path, value } = this
-    const message = `Expected a value of \`${type}\` ${
-      path ? `for \`${path}\`` : ''
-    } ${value ? `but received \`${JSON.stringify(value)}\`` : ''}`
+class ParseTypeError extends TypeError {
+  constructor({ data, path, value, types } = {}) {
+    super();
 
-    return message
-  }
-
-  constructor({ data, path, value, type } = {}) {
-    this.error = true
-    this.path = path
-    this.value = value
-    this.type = type
+    this.error = true;
+    this.path = path;
+    this.value = value;
+    this.types = types;
+    this.data = data;
   }
 
   get message() {
-    return this.format()
+    const { types, path, value } = this;
+    const message = `Expected a value of \`${types.join(', ')}\` ${
+      path ? `for \`${path}\`` : ''
+    } ${value ? `but received \`${JSON.stringify(value)}\`` : ''}`;
+
+    return message;
   }
-  set message() {}
+  set message(v) {}
 }
 
-module.exports = ParseTypeError
+module.exports = ParseTypeError;

@@ -19,5 +19,8 @@
   "dependencies": {
     "debug": "^3.1.0",
     "eris": "^0.8.5"
+  },
+  "devDependencies": {
+    "ava": "^0.25.0"
   }
 }

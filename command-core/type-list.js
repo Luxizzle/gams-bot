@@ -16,44 +16,49 @@ class TypeList {
     this.parser = parser;
   }
 
-  arg(name, type = 'string', optional = false) {
+  arg(name, types = ['string'], optional = false) {
     this.args.push({
       name,
-      type: Array.isArray(type) ? type : [type],
+      types: Array.isArray(types) ? types : [types],
       optional,
     });
 
     return this;
   }
 
-  parse(content, { msg, bot }) {
-    let contentArgs = content.match(argsRegex);
-
-    let value = contentArgs.shift();
-
+  parse(content, { bot, msg }) {
+    let contentSplit = content.match(argsRegex);
+    let value = contentSplit.shift();
     let args = {};
 
-    for (const [
-      index,
-      { name, type, optional },
-    ] of this.args.entries()) {
-      let result = this.parser.parse(
-        { value, name, type },
-        { msg, bot }
-      );
+    // loop trough set arguments
+    for (const { name, types, optional } of this.args) {
+      let data = null;
 
-      if (result instanceof ParseTypeError) {
-        // Not the right type
-        if (optional) {
-          continue; // optional, skip this arg
-        }
-        return result; // return error
+      // loop trough types
+      for (const type of types) {
+        // parse type
+        data = this.parser.parse({ value, name, type }, { bot, msg });
+
+        // if its not an error, we've found the argument
+        if (data instanceof ParseTypeError === false) break;
       }
 
-      args[name] = result;
-      value = contentArgs.shift();
+      // if end result is an error
+      if (data instanceof ParseTypeError) {
+        // not optional, return error
+        if (!optional) return data;
+      } else {
+        // got the argument, add to args object
+        args[name] = data;
+      }
+
+      // get next argument
+      value = contentSplit.shift();
     }
 
     return args;
   }
 }
+
+module.exports = TypeList;
