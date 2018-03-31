@@ -22,6 +22,7 @@ class Command {
         `\`cmd\` should be an instance of Command, got \`${cmd.toString()}\``
       );
 
+    cmd.parent = this;
     this.subcommands.push(cmd);
 
     return cmd;
@@ -40,8 +41,6 @@ class Command {
 
   // Action
   action(fn) {
-    if (!fn) return this._action({ bot, msg });
-
     this._action = fn;
   }
 
@@ -53,7 +52,7 @@ class Command {
     let args = this.argList.parse(content);
     if (args instanceof ParseTypeError) return args;
 
-    this.action(msg, args);
+    return this._action(msg, args);
   }
 
   parseSubcommands(msg, content) {

@@ -1,7 +1,6 @@
 import test from 'ava';
 
 const TypeList = require('../../command-core/type-list');
-const ParseTypeError = require('../../command-core/type-parser-error');
 
 const botMock = {
   users: [{ username: 'testUser', id: '123' }],

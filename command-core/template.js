@@ -2,46 +2,6 @@ const log = require('debug')('message-template');
 const { DateTime } = require('luxon');
 const p = require('../util/p');
 
-let msgContent = {
-  content: {
-    content: String,
-    embed: {
-      title: String,
-      description: String,
-      url: String,
-      timestamp: Date,
-      color: Number,
-      footer: {
-        text: String,
-        icon_url: String,
-      },
-      image: {
-        url: String,
-      },
-      thumbnail: {
-        url: String,
-      },
-      video: {
-        url: String,
-      },
-      provider: {
-        name: String,
-        url: String,
-      },
-      author: {
-        name: String,
-        url: String,
-        icon_url: String,
-        fields: [{ name: String, value: String, inline: Boolean }],
-      },
-    },
-  },
-  file: {
-    file: String,
-    name: String,
-  },
-};
-
 const defaultActions = {
   now: () =>
     DateTime.local().toLocaleString(DateTime.TIME_24_WITH_SHORT_OFFSET),

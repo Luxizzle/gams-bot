@@ -2,7 +2,6 @@ const EventEmitter = require('events').EventEmitter;
 const Command = require('./command');
 const MessageTemplateBase = require('./template');
 const log = require('debug')('command-core');
-const p = require('../util/p');
 
 class DefaultTemplate extends MessageTemplateBase {
   constructor(msg, result) {
@@ -14,7 +13,7 @@ class DefaultTemplate extends MessageTemplateBase {
     });
   }
 
-  render(state, actions) {
+  render(state) {
     return {
       content: `${state.authorMention}, ${state.result}`,
     };
@@ -45,6 +44,8 @@ class CommandCore extends EventEmitter {
     this.commands = [];
 
     this.defaultReply = DefaultTemplate;
+
+    this.bot.on('messageCreate', this.parse.bind(this));
   }
 
   add(cmd) {

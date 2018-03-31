@@ -1,4 +1,4 @@
-const debug = require("debug")("timed-cache");
+const debug = require('debug')('timed-cache');
 
 module.exports = class TimedCache extends Map {
   constructor(options, data) {
@@ -7,7 +7,7 @@ module.exports = class TimedCache extends Map {
     this.options = Object.assign(
       {},
       {
-        timeout: 5000
+        timeout: 5000,
       },
       options
     );
@@ -19,21 +19,21 @@ module.exports = class TimedCache extends Map {
 
     if (time !== 0) {
       timeout = setTimeout(() => {
-        debug("timeout %s", key);
+        debug('timeout %s', key);
         super.delete(key);
       }, time);
     }
 
     super.set(key, {
       value,
-      timeout
+      timeout,
     });
 
     return value;
   }
 
   update(key, value, force) {
-    let map = this.has(key)
+    this.has(key)
       ? super.set(key, Object.assign({}, super.get(key), { value }))
       : force === true ? this.set(key, value) : undefined;
 
