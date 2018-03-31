@@ -17,7 +17,6 @@
   },
   "homepage": "https://github.com/Luxizzle/strelizia#readme",
   "dependencies": {
-    "barbe": "^3.0.14",
     "debug": "^3.1.0",
     "eris": "^0.8.5",
     "luxon": "^1.0.0"

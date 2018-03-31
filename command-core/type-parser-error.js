@@ -18,6 +18,10 @@ class ParseTypeError extends TypeError {
     return message;
   }
   set message(v) {}
+
+  toString() {
+    return this.message;
+  }
 }
 
 module.exports = ParseTypeError;

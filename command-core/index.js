@@ -2,9 +2,10 @@ const EventEmitter = require('events').EventEmitter;
 const Command = require('./command');
 const MessageTemplateBase = require('./template');
 const log = require('debug')('command-core');
+const p = require('../util/p');
 
 class DefaultTemplate extends MessageTemplateBase {
-  constructor(result) {
+  constructor(msg, result) {
     super();
 
     this.setState({
@@ -90,19 +91,22 @@ class CommandCore extends EventEmitter {
     // Add parsed stuff to message
     msg.command = { command, prefix, label, content };
 
+    // execute command
     this.execute(msg, msg.command);
   }
 
   async execute(msg, { command, content }) {
     let channel = msg.channel;
 
-    let result = await msg.parse(msg, content);
+    // Execute command
+    let result = await command.execute(msg, content);
 
+    // Output result, if any.
     if (result) {
       if (result instanceof MessageTemplateBase) {
         result.create(channel.createMessage);
       } else {
-        let template = new DefaultTemplate(result);
+        let template = new DefaultTemplate(msg, result.toString());
 
         template.create(channel.createMessage);
       }

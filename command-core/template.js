@@ -1,7 +1,5 @@
 const log = require('debug')('message-template');
 const { DateTime } = require('luxon');
-const barbe = require('barbe');
-
 const p = require('../util/p');
 
 let msgContent = {
@@ -61,9 +59,14 @@ class MessageTemplateBase {
     let args = this._render();
 
     let [err, message] = await p(createMessage(...args));
-    if (err) return err;
+    if (err) {
+      log('[error] Error while creating message - %o', err);
+      return err;
+    }
 
     this.message = message;
+
+    return this.message;
   }
 
   setState(newState = {}) {
