@@ -1,4 +1,5 @@
 const ParseTypeError = require('./type-parser-error');
+const log = require('debug')('type-parser');
 
 const roleRegex = /<@&([0-9]+)>/;
 const userRegex = /<@!?([0-9]+)>/;
@@ -15,19 +16,16 @@ const defaultParsers = {
   // discord
   role: (v, { msg }) => {
     const roles =
-      msg.channel && msg.channel.guild
-        ? msg.channel.guild.roles
-        : null;
+      msg.channel && msg.channel.guild ? msg.channel.guild.roles : null;
 
     return (
       roleRegex.test(v) ||
-      (roles
-        ? Boolean(roles.find(r => r.name === v || r.id === v))
-        : false)
+      (roles ? Boolean(roles.find(r => r.name === v || r.id === v)) : false)
     );
   },
   user: (v, { bot, msg }) => {
-    const members = msg.guild ? msg.guild.members : null;
+    const members =
+      msg.channel && msg.channel.guild ? msg.channel.guild.members : null;
     const users = bot.users;
 
     return (
@@ -35,16 +33,12 @@ const defaultParsers = {
       (members
         ? Boolean(members.find(u => u.username === v || u.id === v))
         : false) ||
-      (users
-        ? Boolean(users.find(u => u.username === v || u.id === v))
-        : false)
+      (users ? Boolean(users.find(u => u.username === v || u.id === v)) : false)
     );
   },
   channel: (v, { msg }) => {
     const channels =
-      msg.channel && msg.channel.guild
-        ? msg.channel.guild.channels
-        : null;
+      msg.channel && msg.channel.guild ? msg.channel.guild.channels : null;
 
     return (
       channelRegex.test(v) ||
@@ -78,16 +72,12 @@ const defaultProcessors = {
   // discord
   role: (role, { msg }) => {
     const roles =
-      msg.channel && msg.channel.guild
-        ? msg.channel.guild.roles
-        : null;
+      msg.channel && msg.channel.guild ? msg.channel.guild.roles : null;
 
-    if (Number(role.match) && !role.id) role.id = Number(role.match);
+    if (Number(role.match) && !role.id) role.id = role.match;
 
     if (roles) {
-      role.value = roles.find(
-        r => r.id === role.id || r.name === role.match
-      );
+      role.value = roles.find(r => r.id === role.id || r.name === role.match);
     }
 
     if (role.value) {
@@ -97,19 +87,16 @@ const defaultProcessors = {
     }
   },
   user: (user, { msg, bot }) => {
-    const members = msg.guild ? msg.guild.members : null;
+    const members =
+      msg.channel && msg.channel.guild ? msg.channel.guild.members : null;
     const users = bot.users;
 
-    if (Number(user.match) && !user.id) user.id = Number(user.match);
+    if (Number(user.match) && !user.id) user.id = user.match;
 
     if (members) {
-      user.value = members.find(
-        u => u.id === user.id || u.name === user.match
-      );
+      user.value = members.find(u => u.id === user.id || u.name === user.match);
     } else if (users) {
-      user.value = users.find(
-        u => u.id === user.id || u.name === user.match
-      );
+      user.value = users.find(u => u.id === user.id || u.name === user.match);
     }
 
     if (user.value) {
@@ -120,12 +107,9 @@ const defaultProcessors = {
   },
   channel: (channel, { msg }) => {
     const channels =
-      msg.channel && msg.channel.guild
-        ? msg.channel.guild.channels
-        : null;
+      msg.channel && msg.channel.guild ? msg.channel.guild.channels : null;
 
-    if (Number(channel.match) && !channel.id)
-      channel.id = Number(channel.match);
+    if (Number(channel.match) && !channel.id) channel.id = channel.match;
 
     if (channels) {
       channel.value = channels.find(
@@ -144,25 +128,14 @@ const defaultProcessors = {
 /**
  * Parsers: Simple check if a string is of a type.
  * Converters: Converts a simple string to a type.
- * Processors: Does a more complicated process on a type, can return an error.
+ * Processors: Does a more complicated process on
+ *   a type, can return an error.
  */
 class TypeParser {
-  constructor({
-    parsers = {},
-    converters = {},
-    processors = {},
-  } = {}) {
+  constructor({ parsers = {}, converters = {}, processors = {} } = {}) {
     this.parsers = Object.assign({}, defaultParsers, parsers);
-    this.converters = Object.assign(
-      {},
-      defualtConverters,
-      converters
-    );
-    this.processors = Object.assign(
-      {},
-      defaultProcessors,
-      processors
-    );
+    this.converters = Object.assign({}, defualtConverters, converters);
+    this.processors = Object.assign({}, defaultProcessors, processors);
   }
 
   parse({ value, name, type }, { bot, msg } = {}) {
@@ -175,11 +148,17 @@ class TypeParser {
       type,
     };
 
+    log('Parsing type %s (%o)', type, data);
+
     if (!this.parsers[type](value, { bot, msg }))
       return new ParseTypeError({ value, name, type, data });
 
+    log('Parsed type %s (%o)', type, data);
+
     if (this.converters[type])
       Object.assign(data, this.converters[type](value, { bot, msg }));
+
+    log('Converted type %s (%o)', type, data);
 
     let error;
     if (this.processors[type])
@@ -188,6 +167,8 @@ class TypeParser {
     if (error) {
       return new ParseTypeError({ value, name, type, data });
     }
+
+    log('Processed type %s (%o)', type, data);
 
     return data;
   }

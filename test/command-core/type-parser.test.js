@@ -1,9 +1,10 @@
 import test from 'ava';
 
 const TypeParser = require('../../command-core/type-parser.js');
+const ParseTypeError = require('../../command-core/type-parser-error');
 
 const botMock = {
-  users: [{ name: 'testUser', id: '123' }],
+  users: [{ username: 'testUser', id: '123' }],
 };
 
 const msgMock = {
@@ -11,7 +12,7 @@ const msgMock = {
     guild: {
       roles: [{ name: 'testRole', id: '123' }],
       members: [{ name: 'testUser', id: '123' }],
-      channels: [{ name: 'testChannel', id: '123' }],
+      channels: [{ username: 'testChannel', id: '123' }],
     },
   },
 };
@@ -96,12 +97,12 @@ test('Parses number', async t => {
   });
 });
 
-test('Parses role', async t => {
+// Role
+
+test('Parses role format', async t => {
   const parser = new TypeParser();
 
-  let result;
-
-  result = parser.parse(
+  let result = parser.parse(
     {
       value: '<@&123>',
       name: 'arg',
@@ -117,8 +118,12 @@ test('Parses role', async t => {
     name: 'arg',
     type: 'role',
   });
+});
 
-  result = parser.parse(
+test('Parses role id', async t => {
+  const parser = new TypeParser();
+
+  let result = parser.parse(
     {
       value: '123',
       name: 'arg',
@@ -134,8 +139,12 @@ test('Parses role', async t => {
     name: 'arg',
     type: 'role',
   });
+});
 
-  result = parser.parse(
+test('Parses role name', async t => {
+  const parser = new TypeParser();
+
+  let result = parser.parse(
     {
       value: 'testRole',
       name: 'arg',
@@ -150,5 +159,91 @@ test('Parses role', async t => {
     match: 'testRole',
     name: 'arg',
     type: 'role',
+  });
+});
+
+// User
+
+test('Parses user format', async t => {
+  const parser = new TypeParser();
+
+  let result = parser.parse(
+    {
+      value: '<@123>',
+      name: 'arg',
+      type: 'user',
+    },
+    { msg: msgMock, bot: botMock }
+  );
+
+  t.deepEqual(result, {
+    value: { name: 'testUser', id: '123' },
+    id: '123',
+    match: '<@123>',
+    name: 'arg',
+    type: 'user',
+  });
+});
+
+test('Parses user id', async t => {
+  const parser = new TypeParser();
+
+  let result = parser.parse(
+    {
+      value: '123',
+      name: 'arg',
+      type: 'user',
+    },
+    { msg: msgMock, bot: botMock }
+  );
+
+  t.deepEqual(result, {
+    value: { name: 'testUser', id: '123' },
+    id: '123',
+    match: '123',
+    name: 'arg',
+    type: 'user',
+  });
+});
+
+test('Parses user name', async t => {
+  const parser = new TypeParser();
+
+  let result = parser.parse(
+    {
+      value: 'testUser',
+      name: 'arg',
+      type: 'user',
+    },
+    { msg: msgMock, bot: botMock }
+  );
+
+  t.deepEqual(result, {
+    value: { name: 'testUser', id: '123' },
+    id: '123',
+    match: 'testUser',
+    name: 'arg',
+    type: 'user',
+  });
+});
+
+test('Creates a correct error', async t => {
+  let result = new ParseTypeError({
+    data: {},
+    name: 'arg',
+    value: 'asd',
+    type: 'number',
+  });
+
+  // its a getter, so just mock it
+  result._message = result.message;
+
+  t.deepEqual(JSON.parse(JSON.stringify(result)), {
+    error: true,
+    name: 'arg',
+    value: 'asd',
+    type: 'number',
+    data: {},
+    _message: 'Expected a value of `number` for `arg` but received `"asd"`',
   });
 });

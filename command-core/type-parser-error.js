@@ -1,18 +1,18 @@
 class ParseTypeError extends TypeError {
-  constructor({ data, path, value, types } = {}) {
+  constructor({ data, name, value, type } = {}) {
     super();
 
     this.error = true;
-    this.path = path;
+    this.name = name;
     this.value = value;
-    this.types = types;
+    this.type = type;
     this.data = data;
   }
 
   get message() {
-    const { types, path, value } = this;
-    const message = `Expected a value of \`${types.join(', ')}\` ${
-      path ? `for \`${path}\`` : ''
+    const { type, name, value } = this;
+    const message = `Expected a value of \`${type}\` ${
+      name ? `for \`${name}\`` : ''
     } ${value ? `but received \`${JSON.stringify(value)}\`` : ''}`;
 
     return message;
