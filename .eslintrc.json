@@ -4,6 +4,12 @@
     "es6": true,
     "node": true
   },
+  "globals": {
+    "core": true,
+    "bot": true,
+    "Command": true,
+    "Template": true
+  },
   "parserOptions": {
     "ecmaVersion": 8,
     "ecmaFeatures": {

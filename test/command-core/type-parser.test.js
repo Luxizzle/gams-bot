@@ -244,6 +244,7 @@ test('Creates a correct error', async t => {
     value: 'asd',
     type: 'number',
     data: {},
-    _message: 'Expected a value of `number` for `arg` but received `"asd"`',
+    _message:
+      'Expected a value of `number` for `arg` but received `"asd"`',
   });
 });

@@ -1,6 +1,7 @@
 const TypeList = require('./type-list');
 const ParseTypeError = require('./type-parser-error');
 const log = require('debug')('command');
+const Permission = require('./permission');
 
 const NO_SUBCOMMAND = Symbol('NO_SUBCOMMAND');
 
@@ -10,8 +11,11 @@ class Command {
     this.options = Object.assign({}, options);
     this.subcommands = [];
 
-    this._check = () => true;
-    this._action = () => 'No action for this command';
+    this.permission({
+      custom: () => true,
+    });
+
+    this.action(() => 'No action for this command.');
 
     this.argList = new TypeList();
   }
@@ -35,13 +39,15 @@ class Command {
   }
 
   // Requirement check
-  check(fn) {
-    this._check = fn;
-  }
+  check(msg) {}
 
   // Action
   action(fn) {
     this._action = fn;
+  }
+
+  permission(p) {
+    this._permission = new Permission(p);
   }
 
   execute(msg, content) {
@@ -52,6 +58,7 @@ class Command {
     let args = this.argList.parse(content);
     if (args instanceof ParseTypeError) return args;
 
+    // execute command
     return this._action(msg, args);
   }
 
@@ -62,7 +69,9 @@ class Command {
     let label;
     let subcommand = this.subcommands.find(cmd => {
       // Find label
-      label = cmd.labels.find(label => content.startsWith(label + ' '));
+      label = cmd.labels.find(label =>
+        content.startsWith(label + ' ')
+      );
       return label ? true : false;
     });
 
@@ -80,8 +89,14 @@ class Command {
       content,
     });
 
-    // execute command
-    return subcommand.execute(msg, msg.subcommands[msg.subcommands.length - 1]);
+    // Permission check
+    if (this._permission.check(msg)) {
+      // execute command
+      return subcommand.execute(
+        msg,
+        msg.subcommands[msg.subcommands.length - 1]
+      );
+    }
   }
 }
 

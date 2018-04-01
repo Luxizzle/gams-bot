@@ -16,16 +16,22 @@ const defaultParsers = {
   // discord
   role: (v, { msg }) => {
     const roles =
-      msg.channel && msg.channel.guild ? msg.channel.guild.roles : null;
+      msg.channel && msg.channel.guild
+        ? msg.channel.guild.roles
+        : null;
 
     return (
       roleRegex.test(v) ||
-      (roles ? Boolean(roles.find(r => r.name === v || r.id === v)) : false)
+      (roles
+        ? Boolean(roles.find(r => r.name === v || r.id === v))
+        : false)
     );
   },
   user: (v, { bot, msg }) => {
     const members =
-      msg.channel && msg.channel.guild ? msg.channel.guild.members : null;
+      msg.channel && msg.channel.guild
+        ? msg.channel.guild.members
+        : null;
     const users = bot.users;
 
     return (
@@ -33,12 +39,16 @@ const defaultParsers = {
       (members
         ? Boolean(members.find(u => u.username === v || u.id === v))
         : false) ||
-      (users ? Boolean(users.find(u => u.username === v || u.id === v)) : false)
+      (users
+        ? Boolean(users.find(u => u.username === v || u.id === v))
+        : false)
     );
   },
   channel: (v, { msg }) => {
     const channels =
-      msg.channel && msg.channel.guild ? msg.channel.guild.channels : null;
+      msg.channel && msg.channel.guild
+        ? msg.channel.guild.channels
+        : null;
 
     return (
       channelRegex.test(v) ||
@@ -72,12 +82,16 @@ const defaultProcessors = {
   // discord
   role: (role, { msg }) => {
     const roles =
-      msg.channel && msg.channel.guild ? msg.channel.guild.roles : null;
+      msg.channel && msg.channel.guild
+        ? msg.channel.guild.roles
+        : null;
 
     if (Number(role.match) && !role.id) role.id = role.match;
 
     if (roles) {
-      role.value = roles.find(r => r.id === role.id || r.name === role.match);
+      role.value = roles.find(
+        r => r.id === role.id || r.name === role.match
+      );
     }
 
     if (role.value) {
@@ -88,15 +102,21 @@ const defaultProcessors = {
   },
   user: (user, { msg, bot }) => {
     const members =
-      msg.channel && msg.channel.guild ? msg.channel.guild.members : null;
+      msg.channel && msg.channel.guild
+        ? msg.channel.guild.members
+        : null;
     const users = bot.users;
 
     if (Number(user.match) && !user.id) user.id = user.match;
 
     if (members) {
-      user.value = members.find(u => u.id === user.id || u.name === user.match);
+      user.value = members.find(
+        u => u.id === user.id || u.name === user.match
+      );
     } else if (users) {
-      user.value = users.find(u => u.id === user.id || u.name === user.match);
+      user.value = users.find(
+        u => u.id === user.id || u.name === user.match
+      );
     }
 
     if (user.value) {
@@ -107,9 +127,12 @@ const defaultProcessors = {
   },
   channel: (channel, { msg }) => {
     const channels =
-      msg.channel && msg.channel.guild ? msg.channel.guild.channels : null;
+      msg.channel && msg.channel.guild
+        ? msg.channel.guild.channels
+        : null;
 
-    if (Number(channel.match) && !channel.id) channel.id = channel.match;
+    if (Number(channel.match) && !channel.id)
+      channel.id = channel.match;
 
     if (channels) {
       channel.value = channels.find(
@@ -132,10 +155,22 @@ const defaultProcessors = {
  *   a type, can return an error.
  */
 class TypeParser {
-  constructor({ parsers = {}, converters = {}, processors = {} } = {}) {
+  constructor({
+    parsers = {},
+    converters = {},
+    processors = {},
+  } = {}) {
     this.parsers = Object.assign({}, defaultParsers, parsers);
-    this.converters = Object.assign({}, defualtConverters, converters);
-    this.processors = Object.assign({}, defaultProcessors, processors);
+    this.converters = Object.assign(
+      {},
+      defualtConverters,
+      converters
+    );
+    this.processors = Object.assign(
+      {},
+      defaultProcessors,
+      processors
+    );
   }
 
   parse({ value, name, type }, { bot, msg } = {}) {
@@ -151,7 +186,12 @@ class TypeParser {
     log('Parsing type %s (%o)', type, data);
 
     if (!this.parsers[type](value, { bot, msg }))
-      return new ParseTypeError({ value, name, type, data });
+      return new ParseTypeError({
+        value,
+        name,
+        type,
+        data,
+      });
 
     log('Parsed type %s (%o)', type, data);
 
@@ -165,7 +205,12 @@ class TypeParser {
       error = this.processors[type](data, { bot, msg });
 
     if (error) {
-      return new ParseTypeError({ value, name, type, data });
+      return new ParseTypeError({
+        value,
+        name,
+        type,
+        data,
+      });
     }
 
     log('Processed type %s (%o)', type, data);

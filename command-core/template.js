@@ -4,7 +4,9 @@ const p = require('../util/p');
 
 const defaultActions = {
   now: () =>
-    DateTime.local().toLocaleString(DateTime.TIME_24_WITH_SHORT_OFFSET),
+    DateTime.local().toLocaleString(
+      DateTime.TIME_24_WITH_SHORT_OFFSET
+    ),
 };
 
 class MessageTemplateBase {

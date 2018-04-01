@@ -65,7 +65,9 @@ class CommandCore extends EventEmitter {
     log('[%s] Parsing message by %s', msg.id, msg.author.username);
 
     // check prefix
-    const prefix = this.options.prefixes.find(p => content.startsWith(p));
+    const prefix = this.options.prefixes.find(p =>
+      content.startsWith(p)
+    );
     if (!prefix) return;
 
     log('[%s] Got prefix', msg.id);
@@ -77,7 +79,9 @@ class CommandCore extends EventEmitter {
     let label;
     let command = this.commands.find(cmd => {
       // Find label
-      label = cmd.labels.find(label => content.startsWith(label + ' '));
+      label = cmd.labels.find(label =>
+        content.startsWith(label + ' ')
+      );
       return label ? true : false;
     });
 

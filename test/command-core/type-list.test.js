@@ -43,7 +43,10 @@ test('Parses args', async t => {
     .arg('arg1', 'string')
     .arg('arg2', 'number');
 
-  let result = list.parse('str 1.23', { bot: botMock, msg: msgMock });
+  let result = list.parse('str 1.23', {
+    bot: botMock,
+    msg: msgMock,
+  });
 
   t.deepEqual(result, {
     arg1: {
@@ -70,7 +73,10 @@ test('Parses optional args', async t => {
     .arg('arg2', 'number', true)
     .arg('arg3', 'user')
 
-  let result = list.parse('1 asd <@123>', { bot: botMock, msg: msgMock });
+  let result = list.parse('1 asd <@123>', {
+    bot: botMock,
+    msg: msgMock,
+  });
 
   t.deepEqual(result, {
     arg1: {
@@ -88,7 +94,10 @@ test('Parses optional args', async t => {
     },
   });
 
-  result = list.parse('1 12 <@123>', { bot: botMock, msg: msgMock });
+  result = list.parse('1 12 <@123>', {
+    bot: botMock,
+    msg: msgMock,
+  });
 
   t.deepEqual(result, {
     arg1: {
