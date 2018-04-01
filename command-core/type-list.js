@@ -2,7 +2,7 @@ const ParseTypeError = require('./type-parser-error');
 const TypeParser = require('./type-parser');
 const log = require('debug')('type-parser-list');
 
-const argsRegex = /(?:"([^"]+)"|'([^']+)'|```((\S|\s)+)```|(\S+))/g;
+const argsRegex = /(?:"([^"]+)"|'([^']+)'|(\S+))/g;
 
 /*
 list
@@ -73,6 +73,13 @@ class TypeList {
     // loop trough set arguments
     for (const { name, types, optional } of this.args) {
       let data = null;
+
+      if (
+        (value.startsWith(`"`) && value.endsWith(`"`)) ||
+        (value.startsWith(`'`) && value.endsWith(`'`))
+      ) {
+        value = value.slice(1, -1);
+      }
 
       // loop trough types
       for (const type of types) {
