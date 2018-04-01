@@ -22,6 +22,7 @@
     "dotenv": "^5.0.1",
     "eris": "^0.8.5",
     "fast-glob": "^2.2.0",
+    "hard-rejection": "^1.0.0",
     "luxon": "^1.0.0"
   },
   "devDependencies": {

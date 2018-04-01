@@ -14,6 +14,8 @@ class DefaultTemplate extends MessageTemplateBase {
   }
 
   render(state) {
+    log('[DefaultTemplate:render] %o', state);
+
     return {
       content: `${state.authorMention}, ${state.result}`,
     };
@@ -45,7 +47,12 @@ class CommandCore extends EventEmitter {
     if (this.bot.on) {
       log('Loading in non-testing enviroment');
 
-      this.bot.on('messageCreate', this.parse.bind(this));
+      this.bot.on('messageCreate', msg => {
+        if (msg.author.bot || msg.author.id === this.bot.user.id)
+          return;
+
+        this.parse(msg);
+      });
       this.bot.on('ready', () => {
         this.options.prefixes = this.options.prefixes.map(p =>
           p.replace(/@mention/g, this.bot.user.mention)
@@ -81,15 +88,21 @@ class CommandCore extends EventEmitter {
     log('[%s] Got prefix', msg.id);
 
     // remove prefix from content
-    content = content.substr(prefix.length).trim();
+    content = content.substr(prefix.length).trim() + ' ';
 
     // Find command
     let label;
     let command = this.commands.find(cmd => {
-      // Find label
-      label = cmd.labels.find(label =>
-        content.startsWith(label + ' ')
+      log(
+        '[%s] Checking label for command %s',
+        msg.id,
+        cmd.labels[0]
       );
+
+      // Find label
+      label = cmd.labels.find(label => {
+        return content.startsWith(label + ' ');
+      });
       return label ? true : false;
     });
 
@@ -117,11 +130,11 @@ class CommandCore extends EventEmitter {
     // Output result, if any.
     if (result) {
       if (result instanceof MessageTemplateBase) {
-        result.create(channel.createMessage);
+        result.create(channel.createMessage.bind(channel));
       } else {
         let template = new DefaultTemplate(msg, result.toString());
 
-        template.create(channel.createMessage);
+        template.create(channel.createMessage.bind(channel));
       }
     }
   }

@@ -31,13 +31,15 @@ class MessageTemplateBase {
     return this.message;
   }
 
-  setState(newState = {}) {
-    Object.assign({}, this.state, newState);
+  setState(patch = {}) {
+    Object.assign(this.state, patch);
 
     if (this.message) this._render();
   }
 
   static toArgs(data) {
+    log(data);
+
     return [data.content, data.file];
   }
 

@@ -8,7 +8,7 @@ const channelRegex = /<#([0-9]+)>/;
 const defaultParsers = {
   null: () => true,
   // string
-  string: () => true,
+  string: v => v.length > 0,
   // number
   number: v => (Number(v) ? true : false),
   int: v => (parseInt(v) ? true : false),

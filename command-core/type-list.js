@@ -28,6 +28,24 @@ class TypeList {
 
   parse(content, { bot, msg }) {
     let contentSplit = content.match(argsRegex);
+
+    // No argument handling
+    if (!contentSplit) {
+      if (this.args.length === 0) return {};
+
+      // Get first required
+      let first = this.args.find(arg => !arg.optional);
+      if (first) {
+        return new ParseTypeError({
+          value: '',
+          name: first.name,
+          type: first.type,
+        });
+      }
+
+      return {};
+    }
+
     let value = contentSplit.shift();
     let args = {};
 
