@@ -16,7 +16,7 @@ module.exports = {
       throw err;
     }
 
-    return Boolean(result[gid]);
+    return Boolean(result[rid]);
   },
   async put(gid, rid) {
     assert(is.string(gid), 'gid should be a string');

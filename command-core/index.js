@@ -103,7 +103,7 @@ class CommandCore extends EventEmitter {
       );
 
       // No guildOnly commands in dm channels
-      if (cmd.options.guildOnly && inGuild === false) return false;
+      if (cmd._options.guildOnly && inGuild === false) return false;
 
       // Find label
       label = cmd.labels.find(label => {

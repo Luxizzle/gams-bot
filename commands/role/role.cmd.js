@@ -1,5 +1,5 @@
 const rolesDb = require('../../tasks/roles');
-const p = require('../util/p');
+const p = require('../../util/p');
 
 let roleCommand = core
   // Main giving command
@@ -7,8 +7,8 @@ let roleCommand = core
   .options({ guildOnly: true })
   .arg('role', 'role')
   .action(async (msg, { role }) => {
-    let author = msg.author;
-    let guildId = msg.channel.guild;
+    let author = msg.member;
+    let guildId = msg.channel.guild.id;
     let roleId = role.value.id;
     let roleName = role.value.name;
 

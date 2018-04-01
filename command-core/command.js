@@ -8,7 +8,7 @@ const NO_SUBCOMMAND = Symbol('NO_SUBCOMMAND');
 class Command {
   constructor(labels, options = {}) {
     this.labels = Array.isArray(labels) ? labels : [labels];
-    this.options = Object.assign(
+    this._options = Object.assign(
       {
         guildOnly: false,
       },
@@ -46,7 +46,9 @@ class Command {
   }
 
   options(o = {}) {
-    Object.assign(this.options, o);
+    Object.assign(this._options, o);
+
+    return this;
   }
 
   // Action
@@ -85,20 +87,39 @@ class Command {
     );
 
     // execute command
-    return this._action(msg, args);
+    // Permission check
+    if (this._permission.check(msg)) {
+      return this._action(msg, args);
+    } else {
+      return 'You do not have permission to run this command.';
+    }
   }
 
   parseSubcommands(msg, content) {
+    let inGuild = msg.channel.guild ? true : false;
+
     log(
       '[%s] [%s] Parsing message for subcommands',
       this.labels[0],
       msg.id
     );
 
+    content = content + ' ';
+
     // Find subcommand
     let label;
     let subcommand = this.subcommands.find(cmd => {
+      log(
+        '[%s] Checking label for subcommand %s',
+        msg.id,
+        cmd.labels[0]
+      );
+
       // Find label
+
+      // No guildOnly commands in dm channels
+      if (cmd._options.guildOnly && inGuild === false) return false;
+
       label = cmd.labels.find(label =>
         content.startsWith(label + ' ')
       );
@@ -110,7 +131,7 @@ class Command {
     log('[%s] [%s] Got subcommand %s', this.labels[0], msg.id, label);
 
     // Remove label from content
-    content = content.substr(label.length - 1).trim();
+    content = content.substr(label.length).trim();
 
     // Add parsed stuff to message
     msg.subcommands = (msg.subcommands || []).push({
@@ -119,14 +140,8 @@ class Command {
       content,
     });
 
-    // Permission check
-    if (this._permission.check(msg)) {
-      // execute command
-      return subcommand.execute(
-        msg,
-        msg.subcommands[msg.subcommands.length - 1]
-      );
-    }
+    // execute command
+    return subcommand.execute(msg, content);
   }
 
   parent() {

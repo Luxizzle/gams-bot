@@ -16,8 +16,6 @@ global.bot = bot;
 const core = new CommandCore(bot);
 global.core = core;
 
-bot.connect();
-
 glob('./commands/**/*.cmd.js').then(files => {
   files.forEach(file => {
     log('Loading command file %s', file);
@@ -26,3 +24,5 @@ glob('./commands/**/*.cmd.js').then(files => {
 
   log('Loaded all commands');
 });
+
+bot.connect();

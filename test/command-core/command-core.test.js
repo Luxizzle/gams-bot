@@ -10,6 +10,7 @@ let msgMock = {
     mention: '<@123>',
     username: 'user123',
   },
+  channel: {},
 };
 
 let botMock = {

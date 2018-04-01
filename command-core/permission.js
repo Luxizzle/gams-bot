@@ -41,7 +41,7 @@ const array = x => (Array.isArray(x) ? x : [x]);
 
 const run = (logics, vars) => {
   // Root object is always a semi-AND gate
-  return Array.from(logics.entries()).every(([key, logics]) =>
+  return Array.from(Object.entries(logics)).every(([key, logics]) =>
     Logic[key](logics, vars)
   );
 };
@@ -60,7 +60,7 @@ class Permission {
   check(msg) {
     let vars = {
       msg: msg,
-      user: msg.author,
+      user: msg.member || msg.author,
       channel: msg.channel,
       guild: msg.channel.guild,
     };

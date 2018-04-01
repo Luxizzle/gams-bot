@@ -1,7 +1,8 @@
-let ParseTypeError = require('./type-parser-error');
-let TypeParser = require('./type-parser');
+const ParseTypeError = require('./type-parser-error');
+const TypeParser = require('./type-parser');
+const log = require('debug')('type-parser-list');
 
-let argsRegex = /(?:"([^"]+)"|'([^']+)'|```((\S|\s)+)```|(\S+))/g;
+const argsRegex = /(?:"([^"]+)"|'([^']+)'|```((\S|\s)+)```|(\S+))/g;
 
 /*
 list
@@ -10,13 +11,27 @@ list
   .arg('arg3', ['user', 'role'])
 */
 
+let idCounter = 1;
+
 class TypeList {
   constructor(parser = new TypeParser()) {
     this.args = [];
     this.parser = parser;
+
+    this.id = idCounter++;
+
+    log('[%s] Constructed type list', this.id);
   }
 
   arg(name, types = ['string'], optional = false) {
+    log(
+      '[%s] Pushing arg `%s` of %o, (optional: %s)',
+      this.id,
+      name,
+      types,
+      Boolean(optional)
+    );
+
     this.args.push({
       name,
       types: Array.isArray(types) ? types : [types],
@@ -36,10 +51,16 @@ class TypeList {
       // Get first required
       let first = this.args.find(arg => !arg.optional);
       if (first) {
+        log(
+          '[%s] No arguments and first required type is %o',
+          this.id,
+          first
+        );
+
         return new ParseTypeError({
           value: '',
           name: first.name,
-          type: first.type,
+          type: first.types,
         });
       }
 
