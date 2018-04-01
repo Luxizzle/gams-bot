@@ -1,61 +1,28 @@
-require('dotenv').config()
+require('dotenv').config();
+require('hard-rejection')();
 
-const Eris = require('eris')
-const glob = require('fast-glob')
-const debug = require('debug')('bot')
-const del = require('del')
+const log = require('debug')('bot');
+const Eris = require('eris');
+const glob = require('fast-glob');
+const CommandCore = require('./command-core/index');
+const Template = require('./command-core/template');
+const Command = require('./command-core/command');
 
-const package = require('./package.json')
+global.Template = Template;
+global.Command = Command;
 
-var bot = new Eris.CommandClient(process.env.DISCORD_TOKEN, {}, {
-  description: package.description,
-  owner: package.author,
-  prefix: "@mention "
-})
+const bot = new Eris(process.env.TOKEN);
+global.bot = bot;
+const core = new CommandCore(bot);
+global.core = core;
 
-global.bot = bot
+glob('./commands/**/*.cmd.js').then(files => {
+  files.forEach(file => {
+    log('Loading command file %s', file);
+    require(file);
+  });
 
-// Load commands
-glob('./commands/**/*.cmd.js')
-  .then((files) => {
-    return Promise.all(files.map(async (file) => {
-      debug('Loading file %s', file)
+  log('Loaded all commands');
+});
 
-      require(file)
-    }))
-  })
-  .then(() => {
-    debug('Loaded all commands')
-  })
-  .catch(err => {
-    console.error(err)
-  })
-
-process.stdin.resume()
-function exitHandler(code) {
-  // clean up voice connections
-  let clients = require('./commands/music/play.cmd')
-  for (let client of clients) {
-    client.disconnect()
-  }
-
-  del.sync('tmp')
-
-  // disconnect ws
-  bot.disconnect({ reconnect: false })
-
-  debug('Disconnecting bot')
-
-  process.exit()
-}
-process.on('SIGINT', exitHandler)
-process.on('beforeExit', exitHandler)
-process.on('exit', (code) => debug('Exiting with code %d', code))
-
-bot.on('ready', () => {
-  debug('Bot is running')
-
-  // bot.editSelf({ avatar: require('image-to-uri')('assets/avatar.png') })
-
-})
-bot.connect()
+bot.connect();

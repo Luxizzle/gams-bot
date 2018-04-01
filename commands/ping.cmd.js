@@ -1,3 +1,11 @@
-bot.registerCommand("ping", ['pong'], {
-  description: ':ping_pong:'
-})
+// prettier-ignore
+core.add(new Command('ping'))
+  .permission({
+    OR: {
+      user_id: [process.env.OWNER_ID],
+      permission: {
+        administrator: true
+      }
+    }
+  })
+  .action(() => 'Pong!');

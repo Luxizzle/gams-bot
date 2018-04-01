@@ -1,7 +1,7 @@
-const level = require('level')
+const Level = require('level');
 
-const db = level('./db', {
-  valueEncoding: 'json'
-})
+const db = Level('./db', {
+  valueEncoding: 'json',
+});
 
-module.exports = db
+module.exports = db;
