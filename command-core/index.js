@@ -69,12 +69,15 @@ class CommandCore extends EventEmitter {
         `\`cmd\` should be an instance of Command, got \`${cmd.toString()}\``
       );
 
+    cmd.parent = this;
     this.commands.push(cmd);
 
     return cmd;
   }
 
   parse(msg) {
+    let inGuild = msg.channel.guild ? true : false;
+
     let content = msg.content.trim();
 
     log('[%s] Parsing message by %s', msg.id, msg.author.username);
@@ -98,6 +101,9 @@ class CommandCore extends EventEmitter {
         msg.id,
         cmd.labels[0]
       );
+
+      // No guildOnly commands in dm channels
+      if (cmd.options.guildOnly && inGuild === false) return false;
 
       // Find label
       label = cmd.labels.find(label => {

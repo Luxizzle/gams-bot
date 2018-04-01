@@ -8,7 +8,12 @@ const NO_SUBCOMMAND = Symbol('NO_SUBCOMMAND');
 class Command {
   constructor(labels, options = {}) {
     this.labels = Array.isArray(labels) ? labels : [labels];
-    this.options = Object.assign({}, options);
+    this.options = Object.assign(
+      {
+        guildOnly: false,
+      },
+      options
+    );
     this.subcommands = [];
 
     this.permission({
@@ -38,6 +43,10 @@ class Command {
     this.argList.arg(...args);
 
     return this;
+  }
+
+  options(o = {}) {
+    Object.assign(this.options, o);
   }
 
   // Action
@@ -118,6 +127,10 @@ class Command {
         msg.subcommands[msg.subcommands.length - 1]
       );
     }
+  }
+
+  parent() {
+    return this.parent;
   }
 }
 

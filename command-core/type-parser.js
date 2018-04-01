@@ -174,6 +174,17 @@ class TypeParser {
   }
 
   parse({ value, name, type }, { bot, msg } = {}) {
+    // @todo write this temp thing
+    /*
+    if (typeof type === 'object') {
+      this.parsers['_temp'] = type.parser;
+      this.converters['_temp'] = type.converter;
+      this.processors['_temp'] = type.processor;
+
+      type = '_temp';
+    }
+    */
+
     if (!this.parsers[type])
       throw new Error(`No parser found for type \`${type}\``);
 
