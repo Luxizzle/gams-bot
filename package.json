@@ -4,7 +4,8 @@
   "description": "Simple discord bot",
   "main": "index.js",
   "scripts": {
-    "test": "ava"
+    "test": "ava",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -18,7 +19,9 @@
   "homepage": "https://github.com/Luxizzle/strelizia#readme",
   "dependencies": {
     "debug": "^3.1.0",
+    "dotenv": "^5.0.1",
     "eris": "^0.8.5",
+    "fast-glob": "^2.2.0",
     "luxon": "^1.0.0"
   },
   "devDependencies": {

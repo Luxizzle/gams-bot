@@ -1,4 +1,4 @@
-const log = require('debug')('message-template');
+const log = require('debug')('template');
 const { DateTime } = require('luxon');
 const p = require('../util/p');
 

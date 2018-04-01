@@ -37,15 +37,23 @@ class CommandCore extends EventEmitter {
       ? this.options.prefixes
       : [this.options.prefixes];
 
-    this.options.prefixes = this.options.prefixes.map(p =>
-      p.replace(/@mention/g, this.bot.user.mention)
-    );
-
     this.commands = [];
 
     this.defaultReply = DefaultTemplate;
 
-    this.bot.on('messageCreate', this.parse.bind(this));
+    // its not there in testing
+    if (this.bot.on) {
+      log('Loading in non-testing enviroment');
+
+      this.bot.on('messageCreate', this.parse.bind(this));
+      this.bot.on('ready', () => {
+        this.options.prefixes = this.options.prefixes.map(p =>
+          p.replace(/@mention/g, this.bot.user.mention)
+        );
+
+        log('Loaded as %s', this.bot.user.username);
+      });
+    }
   }
 
   add(cmd) {
@@ -73,7 +81,7 @@ class CommandCore extends EventEmitter {
     log('[%s] Got prefix', msg.id);
 
     // remove prefix from content
-    content = content.substr(prefix.length - 1).trim();
+    content = content.substr(prefix.length).trim();
 
     // Find command
     let label;
@@ -91,7 +99,7 @@ class CommandCore extends EventEmitter {
     log('[%s] Got command %s', msg.id, label);
 
     // Remove label from content
-    content = content.substr(label.length - 1).trim();
+    content = content.substr(label.length).trim();
 
     // Add parsed stuff to message
     msg.command = { command, prefix, label, content };

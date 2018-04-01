@@ -1,7 +1,7 @@
 let ParseTypeError = require('./type-parser-error');
 let TypeParser = require('./type-parser');
 
-let argsRegex = /(?:"([^"]+)"|'([^']+)'|(\S+))/g;
+let argsRegex = /(?:"([^"]+)"|'([^']+)'|```((\S|\s)+)```|(\S+))/g;
 
 /*
 list

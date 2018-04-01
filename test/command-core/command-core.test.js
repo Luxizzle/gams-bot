@@ -4,8 +4,9 @@ const CommandCore = require('../../command-core/index');
 const Command = require('../../command-core/command');
 
 let msgMock = {
+  id: '456',
   author: {
-    id: 123,
+    id: '123',
     mention: '<@123>',
     username: 'user123',
   },

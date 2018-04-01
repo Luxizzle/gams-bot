@@ -1,3 +1,5 @@
+const log = require('debug')('permission');
+
 const Logic = {
   // Gates
   OR: (logics, vars) => logics.some(logics => run(logics, vars)),
@@ -62,6 +64,8 @@ class Permission {
       channel: msg.channel,
       guild: msg.channel.guild,
     };
+
+    log('[%s] Running check', msg.id);
 
     return run(this.perms, vars);
   }

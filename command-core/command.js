@@ -18,6 +18,8 @@ class Command {
     this.action(() => 'No action for this command.');
 
     this.argList = new TypeList();
+
+    log('Constructed command %s', this.labels[0]);
   }
 
   add(cmd) {
@@ -33,21 +35,22 @@ class Command {
   }
 
   arg(...args) {
-    this.argList(...args);
+    this.argList.arg(...args);
 
     return this;
   }
 
-  // Requirement check
-  check(msg) {}
-
   // Action
   action(fn) {
     this._action = fn;
+
+    return this;
   }
 
   permission(p) {
     this._permission = new Permission(p);
+
+    return this;
   }
 
   execute(msg, content) {
@@ -55,15 +58,33 @@ class Command {
     let result = this.parseSubcommands(msg, content);
     if (result !== NO_SUBCOMMAND) return result;
 
-    let args = this.argList.parse(content);
+    log(
+      '[%s] [%s] Parsing message args (%s)',
+      this.labels[0],
+      msg.id,
+      content
+    );
+
+    let args = this.argList.parse(content, { msg, bot: global.bot });
     if (args instanceof ParseTypeError) return args;
+
+    log(
+      '[%s] [%s] Executing command with args %o',
+      this.labels[0],
+      msg.id,
+      args
+    );
 
     // execute command
     return this._action(msg, args);
   }
 
   parseSubcommands(msg, content) {
-    log('[%s] [%s] Parsing message', this.labels[0], msg.id);
+    log(
+      '[%s] [%s] Parsing message for subcommands',
+      this.labels[0],
+      msg.id
+    );
 
     // Find subcommand
     let label;
