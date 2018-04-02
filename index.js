@@ -16,7 +16,10 @@ global.bot = bot;
 const core = new CommandCore(bot);
 global.core = core;
 
-glob('./commands/**/*.cmd.js').then(files => {
+glob([
+  './command-core/default-commands/**/*.cmd.js',
+  './commands/**/*.cmd.js',
+]).then(files => {
   files.forEach(file => {
     log('Loading command file %s', file);
     require(file);

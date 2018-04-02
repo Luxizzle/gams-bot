@@ -4,7 +4,10 @@ const p = require('../../util/p');
 let roleCommand = core
   // Main giving command
   .add(new Command('role'))
-  .options({ guildOnly: true })
+  .options({
+    guildOnly: true,
+    shortDescription: 'Give or remove a role',
+  })
   .arg('role', 'role')
   .action(async (msg, { role }) => {
     let author = msg.member;

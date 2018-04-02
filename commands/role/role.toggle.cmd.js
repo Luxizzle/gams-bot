@@ -6,7 +6,10 @@ let roleCommand = require('./role.cmd');
 
 roleCommand
   .add(new Command('toggle'))
-  .options({ guildOnly: true })
+  .options({
+    guildOnly: true,
+    shortDescription: 'Toggle a role',
+  })
   .permission({
     permission: ['administrator'],
   })

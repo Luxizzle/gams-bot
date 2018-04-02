@@ -3,6 +3,8 @@ const ParseTypeError = require('./type-parser-error');
 const log = require('debug')('command');
 const Permission = require('./permission');
 
+const HelpTemplate = require('./help-template');
+
 const NO_SUBCOMMAND = Symbol('NO_SUBCOMMAND');
 
 class Command {
@@ -23,6 +25,29 @@ class Command {
     this.action(() => 'No action for this command.');
 
     this.argList = new TypeList();
+
+    // Add help subcommand
+    if (this.labels[0] !== 'help') {
+      this.add(new Command(['help', '?']))
+        .options({
+          weight: -999,
+          shortDescription: 'You are here now',
+        })
+        .template(HelpTemplate)
+        .action(function() {
+          log(this);
+
+          let cmd = this.parent;
+
+          return {
+            description:
+              cmd._options.description ||
+              cmd._options.shortDescription ||
+              'No description',
+            commands: cmd.subcommands,
+          };
+        });
+    }
 
     log('Constructed command %s', this.labels[0]);
   }
@@ -46,7 +71,7 @@ class Command {
   }
 
   options(options = {}) {
-    Object.assign(
+    this._options = Object.assign(
       {
         guildOnly: false,
       },
@@ -64,7 +89,7 @@ class Command {
 
   // Action
   action(fn) {
-    this._action = fn;
+    this._action = fn.bind(this);
 
     return this;
   }
@@ -77,6 +102,8 @@ class Command {
 
   template(template) {
     this._template = template;
+
+    return this;
   }
 
   execute(msg, content) {

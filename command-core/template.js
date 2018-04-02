@@ -38,7 +38,7 @@ class MessageTemplateBase {
   }
 
   static toArgs(data) {
-    log(data);
+    log('toArgs - %O', data);
 
     return [data.content, data.file];
   }

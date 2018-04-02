@@ -21,6 +21,7 @@
     "@sindresorhus/is": "^0.7.0",
     "debug": "^3.1.0",
     "dotenv": "^5.0.1",
+    "endent": "^1.1.1",
     "eris": "^0.8.5",
     "fast-glob": "^2.2.0",
     "hard-rejection": "^1.0.0",
