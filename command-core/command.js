@@ -32,6 +32,7 @@ class Command {
         .options({
           weight: -999,
           shortDescription: 'You are here now',
+          sendToDM: true,
         })
         .template(HelpTemplate)
         .action(function() {
