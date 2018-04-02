@@ -103,10 +103,10 @@ class CommandCore extends EventEmitter {
     content = content.substr(label.length).trim();
 
     // Add parsed stuff to message
-    msg.command = { command, prefix, label, content };
+    msg.commands = [{ command, prefix, label, content }];
 
     // execute command
-    this.execute(msg, msg.command);
+    this.execute(msg, msg.commands[0]);
   }
 
   async execute(msg, { command, content }) {
@@ -115,20 +115,25 @@ class CommandCore extends EventEmitter {
       'Failed to send a message to you. I most likely dont have permissions to send you a DM.'
     );
 
+    // Execute command
+    let result = await command.execute(msg, content);
+
+    const lastCommand = msg.commands[msg.commands.length - 1].command;
+
+    log('lastCommand %O', lastCommand);
+
     let channel;
     try {
-      channel = command._options.sendToDM
+      channel = lastCommand._options.sendToDM
         ? await msg.author.getDMChannel()
         : msg.channel;
     } catch (err) {
+      log('[error] %O', err);
       failTemplate.create(
         msg.channel.createMessage.bind(msg.channel)
       );
       return;
     }
-
-    // Execute command
-    let result = await command.execute(msg, content);
 
     // Output result, if any.
     if (result) {
@@ -136,6 +141,7 @@ class CommandCore extends EventEmitter {
         try {
           await result.create(channel.createMessage.bind(channel));
         } catch (err) {
+          log('[error] %O', err);
           failTemplate.create(
             msg.channel.createMessage.bind(msg.channel)
           );
@@ -146,6 +152,7 @@ class CommandCore extends EventEmitter {
         try {
           await template.create(channel.createMessage.bind(channel));
         } catch (err) {
+          log('[error] %O', err);
           failTemplate.create(
             msg.channel.createMessage.bind(msg.channel)
           );

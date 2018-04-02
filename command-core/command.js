@@ -36,8 +36,6 @@ class Command {
         })
         .template(HelpTemplate)
         .action(function() {
-          log(this);
-
           let cmd = this.parent;
 
           return {
@@ -180,12 +178,11 @@ class Command {
     content = content.substr(label.length).trim();
 
     // Add parsed stuff to message
-    msg.subcommands = (msg.subcommands || []).push({
-      subcommand,
+    msg.commands.push({
+      command: subcommand,
       label,
       content,
     });
-
     // execute command
     return subcommand.execute(msg, content);
   }
