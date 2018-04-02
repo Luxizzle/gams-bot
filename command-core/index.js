@@ -1,26 +1,8 @@
 const EventEmitter = require('events').EventEmitter;
 const Command = require('./command');
 const MessageTemplateBase = require('./template');
+const DefaultTemplate = require('./default-template');
 const log = require('debug')('command-core');
-
-class DefaultTemplate extends MessageTemplateBase {
-  constructor(msg, result) {
-    super();
-
-    this.setState({
-      authorMention: msg.author.mention,
-      result,
-    });
-  }
-
-  render(state) {
-    log('[DefaultTemplate:render] %o', state);
-
-    return {
-      content: `${state.authorMention}, ${state.result}`,
-    };
-  }
-}
 
 class CommandCore extends EventEmitter {
   constructor(bot, options) {

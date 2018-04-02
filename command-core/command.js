@@ -7,15 +7,15 @@ const NO_SUBCOMMAND = Symbol('NO_SUBCOMMAND');
 
 class Command {
   constructor(labels, options = {}) {
+    if (!labels) throw Error('Expected a string or array of labels');
     this.labels = Array.isArray(labels) ? labels : [labels];
-    this._options = Object.assign(
-      {
-        guildOnly: false,
-      },
-      options
-    );
+
+    this._options = {};
+    this.options(options);
+
     this.subcommands = [];
 
+    // default permission, allow everyone.
     this.permission({
       custom: () => true,
     });
@@ -45,8 +45,19 @@ class Command {
     return this;
   }
 
-  options(o = {}) {
-    Object.assign(this._options, o);
+  options(options = {}) {
+    Object.assign(
+      {
+        guildOnly: false,
+      },
+      this._options,
+      options
+    );
+
+    if (this._options.template) this.template(this._options.template);
+    if (this._options.permission)
+      this.permission(this._options.permission);
+    if (this._options.action) this.action(this._options.action);
 
     return this;
   }
@@ -62,6 +73,10 @@ class Command {
     this._permission = new Permission(p);
 
     return this;
+  }
+
+  template(template) {
+    this._template = template;
   }
 
   execute(msg, content) {
@@ -80,7 +95,7 @@ class Command {
     if (args instanceof ParseTypeError) return args;
 
     log(
-      '[%s] [%s] Executing command with args %o',
+      '[%s] [%s] Executing command with args %O',
       this.labels[0],
       msg.id,
       args
@@ -89,7 +104,10 @@ class Command {
     // execute command
     // Permission check
     if (this._permission.check(msg)) {
-      return this._action(msg, args);
+      const result = this._action(msg, args);
+      return this._template
+        ? new this._template(msg, result)
+        : result;
     } else {
       return 'You do not have permission to run this command.';
     }

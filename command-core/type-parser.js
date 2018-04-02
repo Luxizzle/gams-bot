@@ -224,7 +224,7 @@ class TypeParser {
       });
     }
 
-    log('Processed type %s (%o)', type, data);
+    log('Processed type %s (%O)', type, data);
 
     return data;
   }
