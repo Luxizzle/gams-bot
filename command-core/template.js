@@ -23,7 +23,7 @@ class MessageTemplateBase {
     let [err, message] = await p(createMessage(...args));
     if (err) {
       log('[error] Error while creating message - %o', err);
-      return err;
+      throw err;
     }
 
     this.message = message;

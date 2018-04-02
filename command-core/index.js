@@ -110,7 +110,22 @@ class CommandCore extends EventEmitter {
   }
 
   async execute(msg, { command, content }) {
-    let channel = msg.channel;
+    const failTemplate = new DefaultTemplate(
+      msg,
+      'Failed to send a message to you. I most likely dont have permissions to send you a DM.'
+    );
+
+    let channel;
+    try {
+      channel = command._options.sendToDM
+        ? await msg.author.getDMChannel()
+        : msg.channel;
+    } catch (err) {
+      failTemplate.create(
+        msg.channel.createMessage.bind(msg.channel)
+      );
+      return;
+    }
 
     // Execute command
     let result = await command.execute(msg, content);
@@ -118,11 +133,23 @@ class CommandCore extends EventEmitter {
     // Output result, if any.
     if (result) {
       if (result instanceof MessageTemplateBase) {
-        result.create(channel.createMessage.bind(channel));
+        try {
+          await result.create(channel.createMessage.bind(channel));
+        } catch (err) {
+          failTemplate.create(
+            msg.channel.createMessage.bind(msg.channel)
+          );
+        }
       } else {
         let template = new DefaultTemplate(msg, result.toString());
 
-        template.create(channel.createMessage.bind(channel));
+        try {
+          await template.create(channel.createMessage.bind(channel));
+        } catch (err) {
+          failTemplate.create(
+            msg.channel.createMessage.bind(msg.channel)
+          );
+        }
       }
     }
   }

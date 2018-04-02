@@ -1,5 +1,5 @@
 require('dotenv').config();
-require('hard-rejection')();
+//require('hard-rejection')();
 
 const log = require('debug')('bot');
 const Eris = require('eris');

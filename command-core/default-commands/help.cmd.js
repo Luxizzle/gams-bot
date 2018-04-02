@@ -4,7 +4,7 @@ core
   .add(new Command(['help', '?']))
   .options({
     weight: -999,
-    sendToDm: true,
+    sendToDM: true,
 
     shortDescription: 'You are here now',
   })
