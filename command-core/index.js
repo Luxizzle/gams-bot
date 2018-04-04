@@ -1,13 +1,10 @@
-const EventEmitter = require('events').EventEmitter;
 const Command = require('./command');
 const MessageTemplateBase = require('./template');
 const DefaultTemplate = require('./default-template');
 const log = require('debug')('command-core');
 
-class CommandCore extends EventEmitter {
+class CommandCore {
   constructor(bot, options) {
-    super();
-
     this.bot = bot;
 
     this.options = Object.assign(
@@ -62,7 +59,7 @@ class CommandCore extends EventEmitter {
 
     let content = msg.content.trim();
 
-    log('[%s] Parsing message by %s', msg.id, msg.author.username);
+    //log('[%s] Parsing message by %s', msg.id, msg.author.username);
 
     // check prefix
     const prefix = this.options.prefixes.find(p =>
@@ -70,7 +67,7 @@ class CommandCore extends EventEmitter {
     );
     if (!prefix) return;
 
-    log('[%s] Got prefix', msg.id);
+    //log('[%s] Got prefix', msg.id);
 
     // remove prefix from content
     content = content.substr(prefix.length).trim() + ' ';
@@ -78,11 +75,11 @@ class CommandCore extends EventEmitter {
     // Find command
     let label;
     let command = this.commands.find(cmd => {
-      log(
-        '[%s] Checking label for command %s',
-        msg.id,
-        cmd.labels[0]
-      );
+      // log(
+      //   '[%s] Checking label for command %s',
+      //   msg.id,
+      //   cmd.labels[0]
+      // );
 
       // No guildOnly commands in dm channels
       if (cmd._options.guildOnly && inGuild === false) return false;
@@ -97,7 +94,7 @@ class CommandCore extends EventEmitter {
     // No command found
     if (!command) return;
 
-    log('[%s] Got command %s', msg.id, label);
+    // log('[%s] Got command %s', msg.id, label);
 
     // Remove label from content
     content = content.substr(label.length).trim();
@@ -120,7 +117,7 @@ class CommandCore extends EventEmitter {
 
     const lastCommand = msg.commands[msg.commands.length - 1].command;
 
-    log('lastCommand %O', lastCommand);
+    // log('lastCommand %O', lastCommand);
 
     let channel;
     try {
