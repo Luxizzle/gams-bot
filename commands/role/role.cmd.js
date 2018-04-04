@@ -1,7 +1,7 @@
 const rolesDb = require('../../tasks/roles');
 const p = require('../../util/p');
 
-let roleCommand = core
+module.exports = core
   // Main giving command
   .add(new Command('role'))
   .options({
@@ -35,5 +35,3 @@ let roleCommand = core
       return `Added role ${roleName}.`;
     }
   });
-
-module.exports = roleCommand;

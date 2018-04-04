@@ -44,6 +44,19 @@ const defaultParsers = {
         : false)
     );
   },
+  member: (v, { msg }) => {
+    const members =
+      msg.channel && msg.channel.guild
+        ? msg.channel.guild.members
+        : null;
+
+    return (
+      userRegex.test(v) ||
+      (members
+        ? Boolean(members.find(u => u.username === v || u.id === v))
+        : false)
+    );
+  },
   channel: (v, { msg }) => {
     const channels =
       msg.channel && msg.channel.guild
@@ -71,6 +84,9 @@ const defualtConverters = {
     id: roleRegex.test(v) ? roleRegex.exec(v)[1] : null,
   }),
   user: v => ({
+    id: userRegex.test(v) ? userRegex.exec(v)[1] : null,
+  }),
+  member: v => ({
     id: userRegex.test(v) ? userRegex.exec(v)[1] : null,
   }),
   channel: v => ({
@@ -111,16 +127,36 @@ const defaultProcessors = {
 
     if (members) {
       user.value = members.find(
-        u => u.id === user.id || u.name === user.match
+        u => u.id === user.id || u.username === user.match
       );
     } else if (users) {
       user.value = users.find(
-        u => u.id === user.id || u.name === user.match
+        u => u.id === user.id || u.username === user.match
       );
     }
 
     if (user.value) {
       user.id = user.value.id;
+    } else {
+      return true; // error
+    }
+  },
+  member: (member, { msg }) => {
+    const members =
+      msg.channel && msg.channel.guild
+        ? msg.channel.guild.members
+        : null;
+
+    if (Number(member.match) && !member.id) member.id = member.match;
+
+    if (members) {
+      member.value = members.find(
+        u => u.id === member.id || u.username === member.match
+      );
+    }
+
+    if (member.value) {
+      member.id = member.value.id;
     } else {
       return true; // error
     }

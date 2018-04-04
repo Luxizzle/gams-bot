@@ -67,7 +67,7 @@ class TypeList {
       return {};
     }
 
-    let value = contentSplit.shift();
+    let value = contentSplit.shift() || '';
     let args = {};
 
     // loop trough set arguments
@@ -100,7 +100,7 @@ class TypeList {
       }
 
       // get next argument
-      value = contentSplit.shift();
+      value = contentSplit.shift() || '';
     }
 
     return args;
