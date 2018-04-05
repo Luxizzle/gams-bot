@@ -108,7 +108,7 @@ class Command {
   execute(msg, content) {
     // Check subcommands
     let resultSub = this.parseSubcommands(msg, content);
-    if (resultSub !== NO_SUBCOMMAND) return result;
+    if (resultSub !== NO_SUBCOMMAND) return resultSub;
 
     // permission check
     if (!this._permission.check(msg))
