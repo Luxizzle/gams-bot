@@ -107,8 +107,12 @@ class Command {
 
   execute(msg, content) {
     // Check subcommands
-    let result = this.parseSubcommands(msg, content);
-    if (result !== NO_SUBCOMMAND) return result;
+    let resultSub = this.parseSubcommands(msg, content);
+    if (resultSub !== NO_SUBCOMMAND) return result;
+
+    // permission check
+    if (!this._permission.check(msg))
+      return 'You do not have permissoin to run this command.';
 
     log(
       '[%s] [%s] Parsing message args (%s)',
@@ -128,15 +132,8 @@ class Command {
     );
 
     // execute command
-    // Permission check
-    if (this._permission.check(msg)) {
-      const result = this._action(msg, args);
-      return this._template
-        ? new this._template(msg, result)
-        : result;
-    } else {
-      return 'You do not have permission to run this command.';
-    }
+    const result = this._action(msg, args);
+    return this._template ? new this._template(msg, result) : result;
   }
 
   parseSubcommands(msg, content) {
