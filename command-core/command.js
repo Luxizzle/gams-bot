@@ -112,7 +112,7 @@ class Command {
 
     // permission check
     if (!this._permission.check(msg))
-      return 'You do not have permissoin to run this command.';
+      return 'You do not have permission to run this command.';
 
     log(
       '[%s] [%s] Parsing message args (%s)',
